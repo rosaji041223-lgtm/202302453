@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cover Fall</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; background: #fff; overflow: hidden; }
+  canvas {
+    position: absolute; left: 50%; top: 50%;
+    width: min(100vw, calc(100vh * 16 / 9));
+    height: min(100vh, calc(100vw * 9 / 16));
+    transform: translate(-50%, -50%);
+  }
+</style>
+</head>
+<body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<script src="cover-fall.js"></script>
+<script>
+  // 애니메이션만 따로 보는 페이지 (실제 표지는 index.html) — 한 번 쓰러지고 끝, 클릭하면 다시 재생
+  CoverFall.build('02/img/cover.png').then(anim => {
+    window.coverFall = anim;
+    const ctx = document.getElementById('c').getContext('2d');
+    let t0;
+    const step = now => {
+      const f = Math.min((now - t0) / 1000, anim.fallEnd);
+      anim.drawFall(ctx, f);
+      if (f < anim.fallEnd) requestAnimationFrame(step);
+    };
+    const play = () => { t0 = performance.now(); requestAnimationFrame(step); };
+    addEventListener('click', play);
+    play();
+  });
+</script>
+</body>
+</html>
